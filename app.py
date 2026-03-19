@@ -1,71 +1,67 @@
-from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
+from flask import Flask, render_template, request, redirect
 import psycopg2
 import os
+from urllib.parse import urlparse
 
 app = Flask(__name__)
-CORS(app)
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if not DATABASE_URL:
+# Get DATABASE_URL from Render environment
+database_url = os.environ.get("DATABASE_URL")
+if not database_url:
     raise ValueError("DATABASE_URL environment variable not set!")
 
-def get_db():
-    return psycopg2.connect(DATABASE_URL)
+# Parse DATABASE_URL
+result = urlparse(database_url)
+username = result.username
+password = result.password
+database = result.path[1:]  # remove leading '/'
+hostname = result.hostname
+port = result.port
 
-@app.route("/")
-def home():
-    return render_template("index.html")
+# Connect to PostgreSQL
+conn = psycopg2.connect(
+    dbname=database,
+    user=username,
+    password=password,
+    host=hostname,
+    port=port
+)
+cursor = conn.cursor()
 
-@app.route("/submit", methods=["POST"])
-def submit():
-    data = request.json
-    email = data.get("email")
-    MY_EMAIL = "dhpcreations15@gmail.com"
+# Create table if not exists
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS entries (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    device_id VARCHAR(255) NOT NULL,
+    UNIQUE(username, device_id)
+)
+""")
+conn.commit()
 
-    conn = get_db()
-    cur = conn.cursor()
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        username = request.form.get("username")
+        message = request.form.get("message")
+        device_id = request.form.get("device_id")
 
-    if email != MY_EMAIL:
-        cur.execute("SELECT * FROM applications WHERE email = %s", (email,))
-        if cur.fetchone():
-            cur.close()
-            conn.close()
-            return jsonify({"error": "You have already submitted an application!"}), 400
+        try:
+            cursor.execute("""
+            INSERT INTO entries (username, message, device_id)
+            VALUES (%s, %s, %s)
+            """, (username, message, device_id))
+            conn.commit()
+        except psycopg2.errors.UniqueViolation:
+            conn.rollback()  # entry already exists
+            pass
 
-    cur.execute("""
-        INSERT INTO applications
-        (name, age, location, role, skills, email, phone, portfolio)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-    """, (
-        data.get("name"), data.get("age"), data.get("location"), data.get("role"),
-        data.get("skills"), data.get("email"), data.get("phone"), data.get("portfolio")
-    ))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return jsonify({"message": "Application submitted successfully!"})
+        return redirect("/")
 
-@app.route("/data")
-def data():
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("SELECT name, age, location, role, skills, email, phone, portfolio FROM applications")
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template("data.html", rows=rows)
-
-@app.route("/clear", methods=["POST"])
-def clear_entries():
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM applications")
-    conn.commit()
-    cur.close()
-    conn.close()
-    return jsonify({"message": "All entries cleared!"})
+    cursor.execute("SELECT username, message FROM entries ORDER BY id DESC")
+    all_entries = cursor.fetchall()
+    return render_template("index.html", entries=all_entries)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
