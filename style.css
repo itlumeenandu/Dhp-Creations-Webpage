@@ -1,100 +1,27 @@
-/* General */
 body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #fff;
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background-color: #f8f8f8;
 }
-
-/* HERO */
-.hero {
-    text-align: center;
-    padding: 80px 20px;
-    background: #2575fc;
-    color: white;
+h1, h2 {
+    color: #333;
 }
-.hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-.hero p {
-    font-size: 1.5rem;
-}
-
-/* ABOUT */
-.about {
-    text-align: center;
-    padding: 50px 20px;
-}
-
-/* SERVICES */
-.services {
-    text-align: center;
-    margin: 50px 20px;
-}
-.services h2 {
-    margin-bottom: 20px;
-}
-.services .cards {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-.services .cards div {
-    background: #f0f0f0;
-    padding: 15px 25px;
-    border-radius: 10px;
-    font-size: 1.1rem;
-}
-
-/* FORM */
-.form-section {
-    text-align: center;
-    padding: 50px 20px;
-}
-.form-section form {
-    display: inline-block;
-    max-width: 500px;
-    width: 100%;
-}
-.form-section input,
-.form-section select,
-.form-section button {
+form input, form textarea {
     display: block;
-    width: 100%;
-    margin: 10px 0;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
+    margin-bottom: 10px;
+    width: 300px;
+    padding: 5px;
 }
-.form-section button {
-    background: #2575fc;
-    color: white;
-    border: none;
-    cursor: pointer;
+button {
+    padding: 5px 10px;
 }
-.form-section button:hover {
-    background: #6a11cb;
+ul {
+    list-style: none;
+    padding: 0;
 }
-
-/* FOOTER */
-.footer {
-    text-align: center;
-    padding: 30px 20px;
-    background: #222;
-    color: white;
-}
-.footer a {
-    color: white;
-    margin: 0 15px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-.footer a:hover {
-    color: #2575fc;
+li {
+    background: #fff;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
 }

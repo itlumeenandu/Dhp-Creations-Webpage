@@ -2,88 +2,31 @@
 <html>
 <head>
     <title>DHP Creations</title>
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Playfair+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
-
 <body>
-
-<!-- HERO -->
-<section class="hero">
-    <h1>DHP Creations</h1>
-    <p>Where Stories Come Alive</p>
-</section>
-
-<!-- ABOUT -->
-<section class="about">
-    <h2>About Us</h2>
-    <p>
-        DHP Creations is an independent film production house focused on creating impactful stories and short-films.
-        We collaborate with talented artists across acting, writing, editing, and direction to bring
-        cinematic visions to life.
-    </p>
-</section>
-
-<!-- SERVICES -->
-<section class="services">
-    <h2 style="text-align:center;">We Are Looking For</h2>
-    <div class="cards" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
-        <div>🎭 Actors</div>
-        <div>✍️ Writers</div>
-        <div>🎬 Directors</div>
-        <div>🎞️ Editors</div>
-        <div>🎥 Cinematographers</div>
-    </div>
-</section>
-
-<!-- FORM -->
-<section class="form-section">
-    <h2>Join DHP Creations</h2>
-
-    <form id="form">
-        <input type="text" name="name" placeholder="Full Name" required>
-        <input type="number" name="age" placeholder="Age" required>
-        <input type="text" name="location" placeholder="Location" required>
-
-        <select name="role" required>
-            <option value="">Select Role</option>
-            <option>Actor</option>
-            <option>Writer</option>
-            <option>Editor</option>
-            <option>Director</option>
-            <option>Cinematographer</option>
-        </select>
-
-        <input type="text" name="skills" placeholder="Skills / Genre / Software">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="text" name="phone" placeholder="Phone" required>
-        <input type="text" name="portfolio" placeholder="Portfolio Link">
-
-        <button type="submit">Apply Now</button>
+    <h1>Enter your details</h1>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Your Name" required>
+        <input type="hidden" name="device_id" id="device_id">
+        <textarea name="message" placeholder="Message"></textarea>
+        <button type="submit">Submit</button>
     </form>
-</section>
 
-<!-- FOOTER -->
-<footer class="footer" style="text-align:center; margin-top:50px;">
-    <h3>Connect With Us</h3>
-    <p style="display:flex; justify-content:center; gap:20px; align-items:center; flex-wrap:wrap;">
-        <a href="https://instagram.com/dhp_creations" target="_blank" style="display:flex; align-items:center; gap:5px;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" width="20" height="20">
-            @dhp_creations
-        </a>
-        <a href="https://youtube.com/@dhpcreations" target="_blank" style="display:flex; align-items:center; gap:5px;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" alt="YouTube" width="20" height="20">
-            @dhpcreations
-        </a>
-        <a href="mailto:dhpcreations15@gmail.com" style="display:flex; align-items:center; gap:5px;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" alt="Gmail" width="20" height="20">
-            dhpcreations15@gmail.com
-        </a>
-    </p>
-</footer>
+    <h2>All Entries</h2>
+    <ul>
+        {% for user, msg in entries %}
+        <li><strong>{{ user }}:</strong> {{ msg }}</li>
+        {% endfor %}
+    </ul>
 
-<script src="script.js"></script>
+    <script>
+        // Auto-generate unique device ID for each user
+        if (!localStorage.getItem('device_id')) {
+            localStorage.setItem('device_id', 'device_' + Math.random().toString(36).substr(2, 9));
+        }
+        document.getElementById('device_id').value = localStorage.getItem('device_id');
+    </script>
 </body>
 </html>
