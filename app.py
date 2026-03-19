@@ -6,12 +6,41 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Make sure to set this environment variable on Render
-DATABASE_URL = os.environ.get("DATABASE_URL", "PASTE_YOUR_LOCAL_DB_URL_HERE")
+# DATABASE_URL comes from Render environment variable for production
+# Fallback is your full Postgres URL
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://dhp_creations_webpage_user:zpvA6GOp6ZZwq8z9jP7H124NhxpFfYnz@dpg-d6te41f5r7bs73abruv0-a.oregon-postgres.render.com/dhp_creations_webpage"
+)
 
 def get_db():
     return psycopg2.connect(DATABASE_URL)
 
+# Root route with simple HTML linking to /data
+@app.route('/')
+def home():
+    return """
+    <html>
+        <head>
+            <title>Flask App on Render</title>
+            <style>
+                body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+                a.button { 
+                    display: inline-block; padding: 10px 20px; background-color: #4CAF50; 
+                    color: white; text-decoration: none; border-radius: 5px; font-weight: bold; 
+                }
+                a.button:hover { background-color: #45a049; }
+            </style>
+        </head>
+        <body>
+            <h1>Welcome! Your Flask app is running on Render.</h1>
+            <p>Click below to see submitted data:</p>
+            <a class="button" href="/data">View Data</a>
+        </body>
+    </html>
+    """
+
+# Submit endpoint
 @app.route('/submit', methods=['POST'])
 def submit():
     data = request.json
@@ -33,6 +62,7 @@ def submit():
 
     return jsonify({"message": "Saved"})
 
+# Data endpoint
 @app.route('/data')
 def data():
     conn = get_db()
@@ -57,6 +87,6 @@ def data():
     return jsonify(result)
 
 if __name__ == "__main__":
-    # Use Render's port or default 5000 for local testing
+    # Use Render's port if available, fallback to 5000 locally
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
