@@ -1,45 +1,45 @@
+const API = "http://127.0.0.1:5000";
+
 const form = document.getElementById("form");
-const messageEl = document.getElementById("message");
+const dataDiv = document.getElementById("data");
 
 form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // Gather form data
-  const data = {
-    name: form.name.value,
-    age: form.age.value,
-    location: form.location.value,
-    role: form.role.value,
-    skills: form.skills.value,
-    email: form.email.value,
-    phone: form.phone.value,
-    portfolio: form.portfolio.value,
-  };
+    const data = {
+        name: form.name.value,
+        age: form.age.value,
+        location: form.location.value,
+        role: form.role.value,
+        skills: form.skills.value,
+        email: form.email.value,
+        phone: form.phone.value,
+        portfolio: form.portfolio.value
+    };
 
-  try {
-    const response = await fetch("/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+    await fetch(API + "/submit", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
     });
 
-    const result = await response.json();
-
-    if (response.ok) {
-      // Success
-      messageEl.style.color = "lightgreen";
-      messageEl.textContent = result.message;
-      form.reset();
-    } else {
-      // Error (like duplicate submission)
-      messageEl.style.color = "red";
-      messageEl.textContent = result.error || "Submission failed!";
-    }
-  } catch (err) {
-    messageEl.style.color = "red";
-    messageEl.textContent = "Server error. Please try again later.";
-    console.error(err);
-  }
+    loadData();
 });
+
+async function loadData() {
+    const res = await fetch(API + "/data");
+    const users = await res.json();
+
+    dataDiv.innerHTML = "";
+
+    users.forEach(u => {
+        dataDiv.innerHTML += `
+        <div>
+            <h3>${u.name} (${u.role})</h3>
+            <p>${u.location}</p>
+            <p>${u.skills}</p>
+        </div>`;
+    });
+}
+
+loadData();

@@ -1,68 +1,43 @@
-from flask import Flask, render_template, request, redirect
-import psycopg2
-import psycopg2.errors
-import os
-from urllib.parse import urlparse
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import sqlite3
 
 app = Flask(__name__)
+CORS(app)
 
-# Get DATABASE_URL from Render
-database_url = os.environ.get("DATABASE_URL")
-if not database_url:
-    raise ValueError("DATABASE_URL environment variable not set!")
+def get_db():
+    return sqlite3.connect("database.db")
 
-# Parse DATABASE_URL
-result = urlparse(database_url)
-username = result.username
-password = result.password
-database = result.path[1:]  # remove leading /
-hostname = result.hostname
-port = result.port
+@app.route('/submit', methods=['POST'])
+def submit():
+    data = request.json
+    conn = get_db()
 
-# Connect to PostgreSQL
-conn = psycopg2.connect(
-    dbname=database,
-    user=username,
-    password=password,
-    host=hostname,
-    port=port
-)
-cursor = conn.cursor()
+    conn.execute("INSERT INTO applications VALUES (NULL,?,?,?,?,?,?,?,?)",
+    (data['name'], data['age'], data['location'], data['role'],
+     data['skills'], data['email'], data['phone'], data['portfolio']))
 
-# Create table if it doesn't exist
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS entries (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    device_id VARCHAR(255) NOT NULL,
-    UNIQUE(username, device_id)
-)
-""")
-conn.commit()
+    conn.commit()
+    conn.close()
+    return jsonify({"msg": "ok"})
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
-        username = request.form.get("username")
-        message = request.form.get("message")
-        device_id = request.form.get("device_id")
+@app.route('/data')
+def data():
+    conn = get_db()
+    cur = conn.execute("SELECT * FROM applications")
+    rows = cur.fetchall()
+    conn.close()
 
-        try:
-            cursor.execute("""
-            INSERT INTO entries (username, message, device_id)
-            VALUES (%s, %s, %s)
-            """, (username, message, device_id))
-            conn.commit()
-        except psycopg2.errors.UniqueViolation:
-            conn.rollback()  # entry already exists
-            pass
+    result = []
+    for r in rows:
+        result.append({
+            "name": r[1],
+            "age": r[2],
+            "location": r[3],
+            "role": r[4],
+            "skills": r[5]
+        })
 
-        return redirect("/")
+    return jsonify(result)
 
-    cursor.execute("SELECT username, message FROM entries ORDER BY id DESC")
-    all_entries = cursor.fetchall()
-    return render_template("index.html", entries=all_entries)
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
+app.run(debug=True)
