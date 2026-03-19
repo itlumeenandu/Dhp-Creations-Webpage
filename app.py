@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-DATABASE_URL = "PASTE_YOUR_RENDER_DB_URL_HERE"
+# Make sure to set this environment variable on Render
+DATABASE_URL = os.environ.get("DATABASE_URL", "PASTE_YOUR_LOCAL_DB_URL_HERE")
 
 def get_db():
     return psycopg2.connect(DATABASE_URL)
@@ -21,8 +23,8 @@ def submit():
         (name, age, location, role, skills, email, phone, portfolio)
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
     """, (
-        data['name'], data['age'], data['location'], data['role'],
-        data['skills'], data['email'], data['phone'], data['portfolio']
+        data.get('name'), data.get('age'), data.get('location'), data.get('role'),
+        data.get('skills'), data.get('email'), data.get('phone'), data.get('portfolio')
     ))
 
     conn.commit()
@@ -55,4 +57,6 @@ def data():
     return jsonify(result)
 
 if __name__ == "__main__":
-    app.run()
+    # Use Render's port or default 5000 for local testing
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
