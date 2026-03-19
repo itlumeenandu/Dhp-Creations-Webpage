@@ -1,39 +1,32 @@
-const form = document.getElementById("form");
-const messageEl = document.getElementById("message");
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DHP Creations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+    <h1>Enter your details</h1>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Your Name" required>
+        <input type="hidden" name="device_id" id="device_id">
+        <textarea name="message" placeholder="Message"></textarea>
+        <button type="submit">Submit</button>
+    </form>
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const data = {
-    name: form.name.value,
-    age: form.age.value,
-    location: form.location.value,
-    role: form.role.value,
-    skills: form.skills.value,
-    email: form.email.value,
-    phone: form.phone.value,
-    portfolio: form.portfolio.value
-  };
+    <h2>All Entries</h2>
+    <ul>
+        {% for user, msg in entries %}
+        <li><strong>{{ user }}:</strong> {{ msg }}</li>
+        {% endfor %}
+    </ul>
 
-  try {
-    const response = await fetch("/submit", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      messageEl.style.color = "lightgreen";
-      messageEl.textContent = result.message;
-      form.reset();
-    } else {
-      messageEl.style.color = "red";
-      messageEl.textContent = result.error || "Submission failed!";
-    }
-  } catch (err) {
-    messageEl.style.color = "red";
-    messageEl.textContent = "Server error. Try again later.";
-    console.error(err);
-  }
-});
+    <script>
+        // Auto-generate unique device ID for each user
+        if (!localStorage.getItem('device_id')) {
+            localStorage.setItem('device_id', 'device_' + Math.random().toString(36).substr(2, 9));
+        }
+        document.getElementById('device_id').value = localStorage.getItem('device_id');
+    </script>
+</body>
+</html>
