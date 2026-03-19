@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect
 import psycopg2
+import psycopg2.errors
 import os
 from urllib.parse import urlparse
 
 app = Flask(__name__)
 
-# Get DATABASE_URL from Render environment
+# Get DATABASE_URL from Render
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
     raise ValueError("DATABASE_URL environment variable not set!")
@@ -14,7 +15,7 @@ if not database_url:
 result = urlparse(database_url)
 username = result.username
 password = result.password
-database = result.path[1:]  # remove leading '/'
+database = result.path[1:]  # remove leading /
 hostname = result.hostname
 port = result.port
 
@@ -28,7 +29,7 @@ conn = psycopg2.connect(
 )
 cursor = conn.cursor()
 
-# Create table if not exists
+# Create table if it doesn't exist
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS entries (
     id SERIAL PRIMARY KEY,
