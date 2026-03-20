@@ -3,13 +3,14 @@ const API = "https://dhp-creations-webpage-1.onrender.com";
 const form = document.getElementById("form");
 const statusText = document.getElementById("status");
 
+// SINGLE submit handler ✅
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const data = {
         name: document.getElementById("name").value,
         email: document.getElementById("email").value,
-        talent: document.getElementById("role").value,
+        role: document.getElementById("role").value, // ✅ keep ONLY role
         message: document.getElementById("message").value
     };
 
@@ -21,8 +22,11 @@ form.addEventListener("submit", async (e) => {
 
     statusText.innerText = "✅ Application submitted!";
     form.reset();
+    loadData(); // refresh table
 });
 
+
+// Scroll animation
 const cards = document.querySelectorAll(".card");
 
 window.addEventListener("scroll", () => {
@@ -34,40 +38,25 @@ window.addEventListener("scroll", () => {
     });
 });
 
+
 // Load user data
 async function loadData() {
     const res = await fetch(API + "/data");
     const users = await res.json();
 
     let html = "<table><tr><th>Name</th><th>Email</th><th>Role</th><th>Message</th></tr>";
-    users.forEach(u => {
+
+    users.data.forEach(u => {   // ✅ because we formatted JSON
         html += `<tr>
-            <td>${u.name}</td>
-            <td>${u.email}</td>
-            <td>${u.role}</td>
-            <td>${u.message}</td>
+            <td>${u.Name}</td>
+            <td>${u.Email}</td>
+            <td>${u.Role}</td>
+            <td>${u.Message}</td>
         </tr>`;
     });
+
     html += "</table>";
     document.getElementById("submitted-data").innerHTML = html;
 }
-
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const data = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        role: document.getElementById("role").value,
-        message: document.getElementById("message").value
-    };
-    await fetch(API + "/submit", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-    });
-    document.getElementById("status").innerText = "Application Submitted ✅";
-    form.reset();
-    loadData();
-});
 
 loadData(); // initial load
