@@ -86,35 +86,6 @@ Dhp-Creations-Webpage/
 
 ---
 
-## 📦 Installation (Local Setup)
-
-1. Clone repository:
-
-```
-git clone https://github.com/itlumeenandu/Dhp-Creations-Webpage.git
-```
-
-2. Install dependencies:
-
-```
-pip install -r requirements.txt
-```
-
-3. Run Flask app:
-
-```
-python app.py
-```
-
----
-
-## 🌐 Live Demo
-
-* Frontend:
-* Backend:
-
----
-
 ## 📌 Note
 
 This project is developed as part of a **Modern Web Development Workflow** academic project, demonstrating:
