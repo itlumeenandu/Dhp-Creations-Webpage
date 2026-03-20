@@ -19,15 +19,24 @@ def home():
 @app.route("/submit", methods=["POST"])
 def submit():
     data = request.json
+
     conn = connect_db()
     cur = conn.cursor()
+
     cur.execute("""
         INSERT INTO talents (name, email, talent, message)
         VALUES (%s, %s, %s, %s)
-    """, (data["name"], data["email"], data["role"], data["message"]))
+    """, (
+        data.get("name"),
+        data.get("email"),
+        data.get("role"),   # keep role from frontend
+        data.get("message")
+    ))
+
     conn.commit()
     cur.close()
     conn.close()
+
     return jsonify({"msg": "Saved!"})
 
 # FETCH DATA
@@ -35,8 +44,10 @@ def submit():
 def get_data():
     conn = connect_db()
     cur = conn.cursor()
+
     cur.execute("SELECT * FROM talents ORDER BY id DESC")
     rows = cur.fetchall()
+
     cur.close()
     conn.close()
 
@@ -46,9 +57,10 @@ def get_data():
             "id": r[0],
             "name": r[1],
             "email": r[2],
-            "role": r[3],
+            "role": r[3],   # still send as role (frontend expects this)
             "message": r[4]
         })
+
     return jsonify(result)
 
 if __name__ == "__main__":
