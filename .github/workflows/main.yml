@@ -1,0 +1,31 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install Dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+
+    - name: Check Flask App
+      run: |
+        cd backend
+        python -m py_compile app.py
+
+    - name: Success
+      run: echo "Pipeline Successful 🚀"
