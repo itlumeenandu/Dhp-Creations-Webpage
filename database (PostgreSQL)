@@ -1,0 +1,7 @@
+CREATE TABLE talents (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    email TEXT,
+    talent TEXT,
+    message TEXT
+);

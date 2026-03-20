@@ -1,0 +1,276 @@
+/* FONT */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #0f2027, #203a43, #2c5364);
+    color: white;
+    overflow-x: hidden;
+}
+
+/* HERO */
+.hero {
+    height: 100vh;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,1)),
+                url('https://images.unsplash.com/photo-1511379938547-c1f69419868d') center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,180,100,0.25), transparent 70%);
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    filter: blur(50px);
+}
+
+.overlay {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: 5px;
+    text-shadow: 0 0 20px rgba(255,255,255,0.4);
+    animation: fadeZoom 2s ease;
+}
+
+.hero-tagline {
+    color: #bbb;
+    margin-top: 10px;
+    font-size: 1.2rem;
+}
+
+/* CONTAINER */
+.container {
+    padding: 50px 20px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+/* GLASS CARD */
+.card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 25px 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: 0.5s;
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+.card.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* TEXT */
+h2 { font-weight: 600; margin-bottom: 10px; }
+h3 { margin-top: 15px; margin-bottom: 5px; font-weight: 500; }
+p { color: #ddd; line-height: 1.6; }
+
+/* ROLES GRID */
+.roles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+}
+
+.roles li {
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.roles li:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.05);
+}
+
+/* FORM */
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+textarea { resize: none; height: 80px; }
+
+/* BUTTON */
+button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255,75,43,0.6);
+}
+
+/* SOCIAL LINKS */
+.socials a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    background: rgba(255,255,255,0.1);
+    transition: 0.3s;
+}
+
+.socials a:hover { transform: translateX(5px); }
+
+/* STATUS */
+#status { margin-top: 10px; color: #00ffcc; }
+
+/* ANIMATIONS */
+@keyframes fadeZoom {
+    from { opacity: 0; transform: scale(1.2); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* FULL SCREEN CASTING SECTION */
+.container {
+    width: 100%;
+    max-width: 100%; /* full width */
+    padding: 50px 20px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom, #111111, #1a1a1a); /* new darker background */
+}
+
+/* GLASS CARD FULL WIDTH */
+.card {
+    max-width: 900px;
+    width: 90%; /* almost full screen */
+    margin: 30px auto;
+    background: rgba(30, 30, 30, 0.85); /* darker card for contrast */
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+}
+
+/* Roles & Form adjust width */
+.roles li {
+    background: rgba(50,50,50,0.2); /* darker role items */
+}
+
+input, textarea, select {
+    background: rgba(50,50,50,0.2); /* darker input fields */
+    color: #fff;
+}
+
+button {
+    background: linear-gradient(45deg, #ff8c00, #ff416c); /* cinematic orange-pink */
+    color: white;
+}
+
+/* Social Links */
+.socials a {
+    background: rgba(50,50,50,0.2); /* darker social link background */
+    color: #fff;
+}
+
+/* Optional: add padding below hero */
+.hero + .container {
+    padding-top: 60px;
+}
+
+/* SCROLLING CINEMATIC TABLE */
+#submitted-data-wrapper {
+    max-height: 300px; /* height of rolling panel */
+    overflow: hidden;
+    position: relative;
+}
+
+#submitted-data {
+    animation: scrollCredits 15s linear infinite; /* rolling credits */
+}
+
+#submitted-data table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+}
+
+#submitted-data th, #submitted-data td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: left;
+}
+
+#submitted-data th {
+    background: rgba(255,255,255,0.05);
+    color: #ffb347; /* cinematic orange highlight */
+    font-weight: 600;
+}
+
+#submitted-data tr:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+#submitted-data td {
+    background: rgba(255,255,255,0.02);
+}
+
+/* CINEMATIC ROLLING ANIMATION */
+@keyframes scrollCredits {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+#submitted-data-container::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,180,100,0.2), transparent 70%);
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    filter: blur(60px);
+}

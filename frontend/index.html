@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DHP Creations Casting</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- HERO / CINEMATIC HEADER -->
+<div class="hero">
+    <div class="spotlight"></div>
+    <div class="overlay">
+        <h1 class="hero-title">DHP CREATIONS</h1>
+        <p class="hero-tagline">Where Stories Come Alive 🎬</p>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- ABOUT / CASTING -->
+    <div class="card">
+        <h2>🎬 Casting Call – DHP Creations</h2>
+        <p>
+            DHP Creations is a creative production platform focused on short films, cinematic storytelling, and digital content creation.
+        </p>
+        <p>
+            We are inviting passionate and talented individuals to collaborate on upcoming projects and be part of meaningful storytelling.
+        </p>
+
+        <hr>
+
+        <h3>🎥 Open Roles</h3>
+        <ul class="roles">
+            <li>🎭 Actors / Actresses</li>
+            <li>🎬 Assistant Directors</li>
+            <li>🎥 Cinematographers</li>
+            <li>✂️ Video Editors</li>
+            <li>🎶 Music Directors</li>
+            <li>🎤 Singers</li>
+            <li>📝 Script Writers</li>
+            <li>💃 Choreographers</li>
+        </ul>
+
+        <hr>
+
+        <h3>🎬 Direction</h3>
+        <p>
+            All film projects under DHP Creations are directed by <b>NANDU</b>, bringing creative vision and cinematic storytelling to every production.
+        </p>
+
+        <hr>
+
+        <h3>📱 Connect</h3>
+        <div class="socials">
+            <a href="https://instagram.com/dhp_creations" target="_blank">
+                <i class="fab fa-instagram"></i> @dhp_creations
+            </a>
+            <a href="https://youtube.com/@dhpcreations" target="_blank">
+                <i class="fab fa-youtube"></i> @dhpcreations
+            </a>
+            <a href="mailto:dhpcreations15@gmail.com">
+                <i class="fas fa-envelope"></i> dhpcreations15@gmail.com
+            </a>
+        </div>
+    </div>
+
+    <!-- CASTING APPLICATION FORM -->
+    <div class="card">
+        <h2>Apply for Casting 🎭</h2>
+        <form id="form">
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <select id="role" required>
+                <option value="">Select Role</option>
+                <option>Actor / Actress</option>
+                <option>Cinematographer</option>
+                <option>Editor</option>
+                <option>Writer</option>
+                <option>Singer</option>
+                <option>Music Director</option>
+                <option>Choreographer</option>
+                <option>Assistant Director</option>
+            </select>
+            <textarea id="message" placeholder="Tell us about your experience..."></textarea>
+            <button type="submit">Apply Now 🚀</button>
+            <p id="status"></p>
+        </form>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+<h2>Submitted Applications</h2>
+<div id="submitted-data"></div>
+
+<!-- Submitted Applications Cinematic -->
+<div class="card" id="submitted-data-container">
+    <h2>Submitted Applications 🎬</h2>
+    <div id="submitted-data-wrapper">
+        <div id="submitted-data"></div> <!-- table will scroll inside this -->
+    </div>
+</div>
