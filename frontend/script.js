@@ -3,26 +3,44 @@ const API = "https://dhp-creations-webpage-1.onrender.com";
 const form = document.getElementById("form");
 const statusText = document.getElementById("status");
 
-// SINGLE submit handler ✅
+let isSubmitting = false; // prevent double submit
+
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+    isSubmitting = true;
 
     const data = {
         name: document.getElementById("name").value,
         email: document.getElementById("email").value,
-        role: document.getElementById("role").value, // ✅ keep ONLY role
+        role: document.getElementById("role").value,
         message: document.getElementById("message").value
     };
 
-    await fetch(API + "/submit", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-    });
+    try {
+        const res = await fetch(API + "/submit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
 
-    statusText.innerText = "✅ Application submitted!";
-    form.reset();
-    loadData(); // refresh table
+        const result = await res.json();
+
+        if (!res.ok) throw new Error(result.msg || "Failed");
+
+        statusText.innerText = "✅ Application submitted!";
+        form.reset();
+        loadData();
+
+    } catch (err) {
+        statusText.innerText = "❌ Submission failed (check backend)";
+        console.error(err);
+    }
+
+    isSubmitting = false;
 });
 
 
@@ -39,24 +57,29 @@ window.addEventListener("scroll", () => {
 });
 
 
-// Load user data
+// Load data
 async function loadData() {
-    const res = await fetch(API + "/data");
-    const users = await res.json();
+    try {
+        const res = await fetch(API + "/data");
+        const users = await res.json();
 
-    let html = "<table><tr><th>Name</th><th>Email</th><th>Role</th><th>Message</th></tr>";
+        let html = "<table><tr><th>Name</th><th>Email</th><th>Role</th><th>Message</th></tr>";
 
-    users.data.forEach(u => {   // ✅ because we formatted JSON
-        html += `<tr>
-            <td>${u.Name}</td>
-            <td>${u.Email}</td>
-            <td>${u.Role}</td>
-            <td>${u.Message}</td>
-        </tr>`;
-    });
+        users.data.forEach(u => {
+            html += `<tr>
+                <td>${u.Name}</td>
+                <td>${u.Email}</td>
+                <td>${u.Role}</td>
+                <td>${u.Message}</td>
+            </tr>`;
+        });
 
-    html += "</table>";
-    document.getElementById("submitted-data").innerHTML = html;
+        html += "</table>";
+        document.getElementById("submitted-data").innerHTML = html;
+
+    } catch (err) {
+        console.error("Error loading data:", err);
+    }
 }
 
-loadData(); // initial load
+loadData();
