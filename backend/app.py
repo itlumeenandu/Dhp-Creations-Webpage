@@ -4,7 +4,7 @@ from flask_cors import CORS
 import psycopg2
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
