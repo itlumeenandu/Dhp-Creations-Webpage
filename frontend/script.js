@@ -3,7 +3,7 @@ const API = "https://dhp-creations-webpage-1.onrender.com";
 const form = document.getElementById("form");
 const statusText = document.getElementById("status");
 
-let isSubmitting = false; // prevent double submit
+let isSubmitting = false;
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -27,17 +27,22 @@ form.addEventListener("submit", async (e) => {
             body: JSON.stringify(data)
         });
 
-        const result = await res.json();
+        // ✅ safer handling
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text || "Failed");
+        }
 
-        if (!res.ok) throw new Error(result.msg || "Failed");
+        const result = await res.json();
+        console.log(result);
 
         statusText.innerText = "✅ Application submitted!";
         form.reset();
         loadData();
 
     } catch (err) {
-        statusText.innerText = "❌ Submission failed (check backend)";
         console.error(err);
+        statusText.innerText = "❌ Submission failed (check backend)";
     }
 
     isSubmitting = false;
@@ -57,11 +62,13 @@ window.addEventListener("scroll", () => {
 });
 
 
-// Load data
+// ✅ SAFE LOAD DATA
 async function loadData() {
     try {
         const res = await fetch(API + "/data");
         const users = await res.json();
+
+        if (!users || !users.data) return;
 
         let html = "<table><tr><th>Name</th><th>Email</th><th>Role</th><th>Message</th></tr>";
 
