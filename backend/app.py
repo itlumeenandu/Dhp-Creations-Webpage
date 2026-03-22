@@ -1,82 +1,81 @@
-import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2
+import os
 
 app = Flask(__name__)
+
+# ✅ FIX CORS COMPLETELY
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+# ✅ DATABASE CONNECTION
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-def connect_db():
-    return psycopg2.connect(DATABASE_URL, sslmode='require')
+def get_db():
+    return psycopg2.connect(DATABASE_URL)
 
-
+# ✅ HOME ROUTE (IMPORTANT for Render)
 @app.route("/")
 def home():
-    return "Backend Running 🚀"
+    return "Backend Running Successfully 🚀"
 
-
+# ✅ SUBMIT ROUTE
 @app.route("/submit", methods=["POST"])
 def submit():
-    data = request.json
+    try:
+        data = request.get_json()
 
-    conn = connect_db()
-    cur = conn.cursor()
+        name = data.get("name")
+        email = data.get("email")
+        role = data.get("role")
+        message = data.get("message")
 
-    # prevent duplicates
-    cur.execute("""
-        SELECT * FROM talents 
-        WHERE email=%s AND message=%s
-    """, (data["email"], data["message"]))
+        conn = get_db()
+        cur = conn.cursor()
 
-    if cur.fetchone():
+        cur.execute(
+            "INSERT INTO users (name, email, role, message) VALUES (%s, %s, %s, %s)",
+            (name, email, role, message)
+        )
+
+        conn.commit()
         cur.close()
         conn.close()
-        return jsonify({"msg": "Already exists"})
 
-    cur.execute("""
-        INSERT INTO talents (name, email, talent, message)
-        VALUES (%s, %s, %s, %s)
-    """, (
-        data["name"],
-        data["email"],
-        data["role"],
-        data["message"]
-    ))
+        return jsonify({"msg": "Data inserted successfully"})
 
-    conn.commit()
-    cur.close()
-    conn.close()
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({"msg": "Error inserting data"}), 500
 
-    return jsonify({"msg": "Saved"})
+# ✅ DATA ROUTE
+@app.route("/data", methods=["GET"])
+def data():
+    try:
+        conn = get_db()
+        cur = conn.cursor()
 
+        cur.execute("SELECT * FROM users")
+        rows = cur.fetchall()
 
-@app.route("/data")
-def get_data():
-    conn = connect_db()
-    cur = conn.cursor()
+        result = []
+        for row in rows:
+            result.append({
+                "Name": row[1],
+                "Email": row[2],
+                "Role": row[3],
+                "Message": row[4]
+            })
 
-    cur.execute("SELECT * FROM talents ORDER BY id DESC")
-    rows = cur.fetchall()
+        cur.close()
+        conn.close()
 
-    cur.close()
-    conn.close()
+        return jsonify({"data": result})
 
-    result = []
-    for r in rows:
-        result.append({
-            "id": r[0],
-            "name": r[1],
-            "email": r[2],
-            "role": r[3],
-            "message": r[4]
-        })
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({"data": []})
 
-    return jsonify(result)
-
-
-# ❗ THIS IS CRITICAL
+# ✅ IMPORTANT FOR RENDER PORT
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=10000)
