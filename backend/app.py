@@ -4,11 +4,8 @@ from flask_cors import CORS
 import psycopg2
 
 app = Flask(__name__)
+CORS(app)
 
-# ✅ CORS fix
-CORS(app, resources={r"/*": {"origins": "*"}})
-
-# ✅ Database URL
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def connect_db():
@@ -17,52 +14,45 @@ def connect_db():
 
 @app.route("/")
 def home():
-    return "Backend Running Successfully 🚀"
+    return "Backend Running 🚀"
 
 
-# ✅ SUBMIT DATA
 @app.route("/submit", methods=["POST"])
 def submit():
-    try:
-        data = request.json
+    data = request.json
 
-        conn = connect_db()
-        cur = conn.cursor()
+    conn = connect_db()
+    cur = conn.cursor()
 
-        # Prevent duplicates
-        cur.execute("""
-            SELECT * FROM talents
-            WHERE email = %s AND message = %s
-        """, (data.get("email"), data.get("message")))
+    # prevent duplicates
+    cur.execute("""
+        SELECT * FROM talents 
+        WHERE email=%s AND message=%s
+    """, (data["email"], data["message"]))
 
-        if cur.fetchone():
-            cur.close()
-            conn.close()
-            return jsonify({"msg": "Already submitted"}), 200
-
-        cur.execute("""
-            INSERT INTO talents (name, email, talent, message)
-            VALUES (%s, %s, %s, %s)
-        """, (
-            data.get("name"),
-            data.get("email"),
-            data.get("role"),
-            data.get("message")
-        ))
-
-        conn.commit()
+    if cur.fetchone():
         cur.close()
         conn.close()
+        return jsonify({"msg": "Already exists"})
 
-        return jsonify({"msg": "Saved successfully"})
+    cur.execute("""
+        INSERT INTO talents (name, email, talent, message)
+        VALUES (%s, %s, %s, %s)
+    """, (
+        data["name"],
+        data["email"],
+        data["role"],
+        data["message"]
+    ))
 
-    except Exception as e:
-        print("ERROR:", e)
-        return jsonify({"msg": "Server error"}), 500
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"msg": "Saved"})
 
 
-# ✅ GET DATA
-@app.route("/data", methods=["GET"])
+@app.route("/data")
 def get_data():
     conn = connect_db()
     cur = conn.cursor()
@@ -76,19 +66,17 @@ def get_data():
     result = []
     for r in rows:
         result.append({
-            "ID": r[0],
-            "Name": r[1],
-            "Email": r[2],
-            "Role": r[3] if r[3] else "Not Provided",
-            "Message": r[4]
+            "id": r[0],
+            "name": r[1],
+            "email": r[2],
+            "role": r[3],
+            "message": r[4]
         })
 
-    return jsonify({
-        "data": result
-    })
+    return jsonify(result)
 
 
-# ✅ IMPORTANT FOR RENDER (THIS FIXES YOUR ERROR)
+# ❗ THIS IS CRITICAL
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
