@@ -50,7 +50,7 @@ This web application allows users to:
 ### Deployment
 
 * Backend → Render
-* Frontend → Netlify
+* Frontend → Vercel
 
 ---
 
