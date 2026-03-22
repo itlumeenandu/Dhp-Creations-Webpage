@@ -5,13 +5,14 @@ import psycopg2
 
 app = Flask(__name__)
 
-# ✅ FIXED CORS (important)
+# ✅ CORS fix
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+# ✅ Database URL
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def connect_db():
-    return psycopg2.connect(DATABASE_URL)
+    return psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
 @app.route("/")
@@ -19,17 +20,16 @@ def home():
     return "Backend Running Successfully 🚀"
 
 
-# ✅ INSERT DATA (with duplicate protection)
+# ✅ SUBMIT DATA
 @app.route("/submit", methods=["POST"])
 def submit():
     try:
         data = request.json
-        print("🔥 Received:", data)
 
         conn = connect_db()
         cur = conn.cursor()
 
-        # 🚫 Prevent duplicate (same email + message)
+        # Prevent duplicates
         cur.execute("""
             SELECT * FROM talents
             WHERE email = %s AND message = %s
@@ -40,7 +40,6 @@ def submit():
             conn.close()
             return jsonify({"msg": "Already submitted"}), 200
 
-        # ✅ Insert
         cur.execute("""
             INSERT INTO talents (name, email, talent, message)
             VALUES (%s, %s, %s, %s)
@@ -55,14 +54,14 @@ def submit():
         cur.close()
         conn.close()
 
-        return jsonify({"msg": "Saved successfully"}), 200
+        return jsonify({"msg": "Saved successfully"})
 
     except Exception as e:
-        print("❌ ERROR:", e)
+        print("ERROR:", e)
         return jsonify({"msg": "Server error"}), 500
 
 
-# ✅ FETCH DATA
+# ✅ GET DATA
 @app.route("/data", methods=["GET"])
 def get_data():
     conn = connect_db()
@@ -85,10 +84,11 @@ def get_data():
         })
 
     return jsonify({
-        "total_applications": len(result),
         "data": result
     })
 
 
+# ✅ IMPORTANT FOR RENDER (THIS FIXES YOUR ERROR)
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
